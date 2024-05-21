@@ -925,6 +925,31 @@ class raytrace_reflection_functor {
                     bgcol.Black();
                     transp.White();
                 }
+#if MAX_RELEASE_R26
+                Matrix3 MatrixTo( RefFrame ito ) {
+                    switch( ito ) {
+                    case REF_WORLD:
+                        return globContext->camToWorld;
+                    case REF_OBJECT:
+                        return isct.inst->camToObj;
+                    default:
+                    case REF_CAMERA:
+                        return Matrix3();
+                    }
+                }
+
+                Matrix3 MatrixFrom( RefFrame ifrom ) {
+                    switch( ifrom ) {
+                    case REF_OBJECT:
+                        return isct.inst->objToCam;
+                    case REF_WORLD:
+                        return globContext->worldToCam;
+                    default:
+                    case REF_CAMERA:
+                        return Matrix3();
+                    }
+                }
+#endif
             } raySC( r, isct, *m_globContext );
 
             if( isct.inst->mtl )
@@ -1074,12 +1099,37 @@ class raytrace_reflection_functor {
                     bgcol.Black();
                     transp.White();
                 }
+#if MAX_RELEASE_R26
+                Matrix3 MatrixTo( RefFrame ito ) {
+                    switch( ito ) {
+                    case REF_WORLD:
+                        return globContext->camToWorld;
+                    case REF_OBJECT:
+                        return toObject;
+                    default:
+                    case REF_CAMERA:
+                        return Matrix3();
+                    }
+                }
+
+                Matrix3 MatrixFrom( RefFrame ifrom ) {
+                    switch( ifrom ) {
+                    case REF_OBJECT:
+                        return Matrix3(); //  Wrong
+                    case REF_WORLD:
+                        return globContext->worldToCam;
+                    default:
+                    case REF_CAMERA:
+                        return Matrix3();
+                    }
+                }
+#endif
             } bgSC( r, n, m_camToObjectSpace, *m_globContext );
 
             Color result( 0.f, 0.f, 0.f );
 
             if( m_applyEnvironment && m_globContext->envMap != NULL ) {
-                result = (Color)m_globContext->envMap->EvalColor( bgSC );
+                result = (AColor)m_globContext->envMap->EvalColor( bgSC );
 
                 if( !boost::math::isfinite(
                         result.r ) /*|| !boost::math::isfinite(result.g) || !boost::math::isfinite(result.b)*/ ) // Only

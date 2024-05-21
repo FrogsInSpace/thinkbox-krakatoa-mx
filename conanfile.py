@@ -18,7 +18,7 @@ VALID_MAX_CONFIGS: dict[tuple[str, str], set[str]] = {
 SETTINGS: dict[str, Any] = {
     'os': ['Windows'],
     'compiler': {
-        'Visual Studio': {'version': ['15', '16', '17']}
+        'Visual Studio': {'version': ['15', '16', '17']},
     },
     'build_type': None,
     'arch': 'x86_64'

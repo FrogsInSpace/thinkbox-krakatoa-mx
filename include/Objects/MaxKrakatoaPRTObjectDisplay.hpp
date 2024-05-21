@@ -45,8 +45,13 @@ class MaxKrakatoaPRTObjectDisplay : public PRTObject<CHILD> {
                 std::vector<frantic::max3d::particles::modifier_info_t>::iterator it = theMods.begin();
                 bool doUpdate = false;
                 for( it; it != theMods.end(); ++it ) {
+#if MAX_RELEASE_R27
+                    frantic::tstring name = it->first->GetName(false).data();
+#elif MAX_RELEASE_R24
+                    frantic::tstring name = it->first->GetName(false);
+#else
                     frantic::tstring name = it->first->GetName();
-
+#endif
                     if( name.find( _T( "Magma" ) ) != frantic::tstring::npos ) {
                         doUpdate = true;
                         break;

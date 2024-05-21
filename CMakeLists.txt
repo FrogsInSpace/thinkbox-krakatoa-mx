@@ -18,7 +18,7 @@ endif()
 
 add_library( krakatoamx SHARED )
 
-set_property( TARGET krakatoamx PROPERTY CXX_STANDARD 14 )
+set_property( TARGET krakatoamx PROPERTY CXX_STANDARD 17 )
 
 set_target_properties( krakatoamx PROPERTIES OUTPUT_NAME "MaxKrakatoa" )
 set_target_properties( krakatoamx PROPERTIES PREFIX "" )
@@ -117,6 +117,9 @@ frantic_default_source_groups( krakatoamx HEADERDIR include SOURCEDIR src )
 # Disable optimization for the RelWithDebInfo configuration.
 # This allows breakpoints to be hit reliably when debugging in Visual Studio.
 target_compile_options( krakatoamx PRIVATE "$<$<CONFIG:Release>:/O2>$<$<CONFIG:RelWithDebInfo>:/Od>" )
+
+# restore auto_ptr in c++17
+target_compile_definitions( krakatoamx PRIVATE _HAS_AUTO_PTR_ETC=1 )
 
 install( TARGETS krakatoamx
           RUNTIME DESTINATION bin
