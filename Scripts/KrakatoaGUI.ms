@@ -12598,7 +12598,12 @@ rollout Krakatoa_GUI_About "About" rolledup:true category:130 width:540
 		if maxVer == "16" do maxVer = "15"			
 		if maxVer == "14" do maxVer = "13"			
 		edt_installationfolder.text = FranticParticles.KrakatoaHome
-		edt_dlrdate.text = try(getFileModDate (FranticParticles.KrakatoaHome + "3dsMax20"+maxVer+"\\MaxKrakatoa.dlr"))catch("???")
+		
+		-- ApplicationPlugins folder structure
+		edt_dlrdate.text = try(getFileModDate (FranticParticles.KrakatoaHome + "plugin\\MaxKrakatoa.dlr"))catch("???")
+		-- legacy folder structure 
+		if( edt_dlrdate.text=="???" ) do
+			edt_dlrdate.text = try(getFileModDate (FranticParticles.KrakatoaHome + "3dsMax20"+maxVer+"\\MaxKrakatoa.dlr"))catch("???")
 
 		lbl_Krakatoa_30.text = ("")				
 		try

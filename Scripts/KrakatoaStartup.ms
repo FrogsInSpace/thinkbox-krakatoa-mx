@@ -103,22 +103,22 @@ if theKRoot != undefined then
 	try(FranticParticles.LogProgress (" >Loading Krakatoa Birth Channel Generator MacroScript..."))catch()
 	try(fileIn (theKRoot + "Scripts\\Krakatoa_BirthChannelGeneratorUtility.ms"))catch()
 
-	-- if classof KrakatoaSchematicControl == Value then
-	-- (
-	-- 	try(FranticParticles.LogProgress (" >Loading Krakatoa Schematic Flow Script..."))catch()
-	-- 	try(fileIn (theKRoot + "Scripts\\Krakatoa_SchematicFlow.ms"))catch()
-	-- 	try(FranticParticles.LogProgress (" >Loading Krakatoa Channel Node Editor GUI Script..."))catch()
-	-- 	fileIn (theKRoot + "Scripts\\Krakatoa_Channel_Node_Editor.ms")
-	-- 	try(FranticParticles.LogProgress (" >Loading Krakatoa Modifiers Script..."))catch()
-	-- 	fileIn (theKRoot + "Scripts\\Krakatoa_PRTChannel_Modifier.ms")
-	-- 	try(FranticParticles.LogProgress (" >Loading Krakatoa Magma Manager Script..."))catch()
-	-- 	fileIn (theKRoot + "Scripts\\Krakatoa_MagmaFlowManager.ms")
-	-- )
-	-- else
-	-- (
-	-- 	try(FranticParticles.LogProgress (" --Helium SchamticControl plugin NOT FOUND. Cannot load MagmaFlow Editor!"))catch()
-	-- 	messagebox "FATAL ERROR:The Helium Schematic Control required by the Krakatoa MagmaFlow Editor\nwas not propertly installed on this system.\n\nPlease reinstall Krakatoa or edit the plugin.ini file to include the Thinkbox version of the Helium plugin." title:"Krakatoa Startup Failed"
-	-- )
+	if classof KrakatoaSchematicControl == Value then
+	(
+		try(FranticParticles.LogProgress (" >Loading Krakatoa Schematic Flow Script..."))catch()
+		try(fileIn (theKRoot + "Scripts\\Krakatoa_SchematicFlow.ms"))catch()
+		try(FranticParticles.LogProgress (" >Loading Krakatoa Channel Node Editor GUI Script..."))catch()
+		fileIn (theKRoot + "Scripts\\Krakatoa_Channel_Node_Editor.ms")
+		try(FranticParticles.LogProgress (" >Loading Krakatoa Modifiers Script..."))catch()
+		fileIn (theKRoot + "Scripts\\Krakatoa_PRTChannel_Modifier.ms")
+		try(FranticParticles.LogProgress (" >Loading Krakatoa Magma Manager Script..."))catch()
+		fileIn (theKRoot + "Scripts\\Krakatoa_MagmaFlowManager.ms")
+	)
+	else
+	(
+		try(FranticParticles.LogProgress (" --Helium SchamticControl plugin NOT FOUND. Cannot load MagmaFlow Editor!"))catch()
+		messagebox "FATAL ERROR:The Helium Schematic Control required by the Krakatoa MagmaFlow Editor\nwas not propertly installed on this system.\n\nPlease reinstall Krakatoa or edit the plugin.ini file to include the Thinkbox version of the Helium plugin." title:"Krakatoa Startup Failed"
+	)
 	try(FranticParticles.LogProgress (" >Loading Krakatoa File Update Channels GUI Script..."))catch()
 	fileIn (theKRoot + "Scripts\\Krakatoa_PFlowOperators_ChannelSelectorDialog.ms")
 
@@ -144,11 +144,11 @@ if theKRoot != undefined then
 
 	try(FranticParticles.LogProgress ("+Startup Script Finished."))catch()
 	--Make sure we have enough memory.
-	if heapSize < 33554432 do 
+	if heapSize < 67108864 do 
 	(
 		local oldHeap = heapSize 
-		heapSize = 33554432
-		try(FranticParticles.LogProgress ("+MAXScript Heap Size Increased from "+ oldHeap as string + " to 33554432 bytes."))catch()
+		heapSize = 67108864
+		try(FranticParticles.LogProgress ("+MAXScript Heap Size Increased from "+ oldHeap as string + " to 67108864 bytes."))catch()
 	)	
 )
 else

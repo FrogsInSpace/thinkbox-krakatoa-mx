@@ -68,7 +68,7 @@ UNUSED_LICENSE_DENYLIST: set[str] = {
 
 class KrakatoaMXConan(ConanFile):
     name: str = 'krakatoamx'
-    version: str = '2.12.4'
+    version: str = '2.13.0'
     license: str = 'Apache-2.0'
     description: str = 'The Krakatoa Plugin for 3ds Max'
     settings: dict[str, Any] = SETTINGS
