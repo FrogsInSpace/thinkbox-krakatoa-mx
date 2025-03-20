@@ -129,11 +129,15 @@ if theKRoot != undefined then
 	)	
 
 	--try(FranticParticles.LogProgress (" >Loading Krakatoa Menu Creator..."))catch()
-	--fileIn (theKRoot + "Scripts\\KrakatoaMenuCreator.ms")	
-	deleteFile ((getDir #userStartupScripts)+"\\Krakatoa_RemoveKrakatoaMenu.ms")
-	copyFile (theKRoot + "Scripts\\Krakatoa_RemoveKrakatoaMenu.ms")	((getDir #userStartupScripts)+"\\Krakatoa_RemoveKrakatoaMenu.ms")
+	--fileIn (theKRoot + "Scripts\\KrakatoaMenuCreator.ms")
 	
-	callbacks.addScript #postSystemStartup "fileIn (FranticParticles.KrakatoaHome+\"/Scripts/KrakatoaMenuCreator.ms\")" id:#krakatoastartup
+	-- menumanager was removed with 3ds Max 2025
+	if( (maxVersion())[1] < 27000 ) do
+	(
+		deleteFile ((getDir #userStartupScripts)+"\\Krakatoa_RemoveKrakatoaMenu.ms")
+		copyFile (theKRoot + "Scripts\\Krakatoa_RemoveKrakatoaMenu.ms")	((getDir #userStartupScripts)+"\\Krakatoa_RemoveKrakatoaMenu.ms")
+		callbacks.addScript #postSystemStartup "fileIn (FranticParticles.KrakatoaHome+\"/Scripts/KrakatoaMenuCreator.ms\")" id:#krakatoastartup
+	)
 	
 	if classof Thinking == GeometryClass do --if TP installed, try to load the TP PDV Helper
 	(
