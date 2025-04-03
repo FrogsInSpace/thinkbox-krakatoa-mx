@@ -9288,6 +9288,14 @@ rollout Krakatoa_GUI_Partition "Partitioning" category:25 width:457
 	button btn_detectDeadlineNow "Detect Deadline Now!" width:214 align:#right tooltip:"Search for Deadline 3, 4 and higher and load submission functions if found." width:222 offset:[7,-1]
 	
 	label lbl_getDeadline01 "DEADLINE WAS NOT DETECTED ON YOUR SYSTEM!" visible:false pos:[15,400]
+
+	label lbl_getDeadline02 "NOTE: Free Deadline support might have changed ( supported up to 2 NODES without limitations)." visible:false pos:[15,425]
+	label lbl_getDeadline03 "You could try to install Deadline to take advantage of Krakatoa's Partitioning." visible:false pos:[15,450]
+	label lbl_getDeadline04 "In the past it was possible to download Deadline from the link below:" visible:false pos:[15,475]
+	hyperlink url_getDeadline01 "https://us-east-1.console.aws.amazon.com/deadlinecloud/home?region=us-east-1#/thinkbox" address:"https://us-east-1.console.aws.amazon.com/deadlinecloud/home?region=us-east-1#/thinkbox" visible:false pos:[15,500] color:blue hovercolor:red
+	-- hyperlink url_getDeadline01 "http://www.thinkboxsoftware.com/deadline-downloads/" address:"http://www.thinkboxsoftware.com/deadline-downloads/" visible:false pos:[15,500] color:blue hovercolor:red
+	
+	
 	
 	fn tweakControlPositions =
 	(
@@ -12598,12 +12606,13 @@ rollout Krakatoa_GUI_About "About" rolledup:true category:130 width:540
 		if maxVer == "16" do maxVer = "15"			
 		if maxVer == "14" do maxVer = "13"			
 		edt_installationfolder.text = FranticParticles.KrakatoaHome
-		
+		local plugFilePath=FranticParticles.KrakatoaHome + "plugin\\MaxKrakatoa_20"+maxVer+".dlr"
+
 		-- ApplicationPlugins folder structure
-		edt_dlrdate.text = try(getFileModDate (FranticParticles.KrakatoaHome + "plugin\\MaxKrakatoa.dlr"))catch("???")
+		edt_dlrdate.text = try(getFileModDate plugFilePath)catch("???")
 		-- legacy folder structure 
-		if( edt_dlrdate.text=="???" ) do
-			edt_dlrdate.text = try(getFileModDate (FranticParticles.KrakatoaHome + "3dsMax20"+maxVer+"\\MaxKrakatoa.dlr"))catch("???")
+		-- if( edt_dlrdate.text=="???" ) do
+			-- edt_dlrdate.text = try(getFileModDate (FranticParticles.KrakatoaHome + "3dsMax20"+maxVer+"\\MaxKrakatoa.dlr"))catch("???")
 
 		lbl_Krakatoa_30.text = ("")				
 		try
@@ -13853,7 +13862,10 @@ fn updateIconColors =
 	local thePow=1.0
 	try
 	(
-		thePow=(1.0/(if IDisplayGamma.colorCorrectionMode == #gamma then IDisplayGamma.gamma else 1.0))
+		if classof ColorPipelineMgr != UndefinedClass then 
+			thePow=(1.0/(if ColorPipelineMgr.mode == #gamma then ColorPipelineMgr.displayGamma else 1.0))
+		else
+			thePow=(1.0/(if IDisplayGamma.colorCorrectionMode == #gamma then IDisplayGamma.gamma else 1.0))
 	)catch()
 	
 	copy Krakatoa_PresetsArrowBitmap_Base Krakatoa_PresetsArrowBitmap 
@@ -16457,6 +16469,20 @@ fn OpenGUI initOnly:false=
 						RenderPresets.Save 0 ((getdir #renderpresets) + "\\backup_pre_krakatoa_assignment.rps") #{1,4..64} 
 						FranticParticles.LogDebug ("  +Current Renderer's settings backed up.")
 					
+						local cpmStore=#()					
+						if( classof ColorPipelineMgr != UndefinedClass ) do
+						(
+							-- need to force global namespace as this scripts redefines getpropnames() !?!?!? , sigh ....
+							for n in ::getpropnames ColorPipelineMgr do cpmStore = append cpmStore #( n , getProperty ColorPipelineMgr n)
+						)
+						
+						local idgStore=#()
+						if( classof IDisplayGamma != UndefinedClass ) do
+						(
+							-- need to force global namespace as this scripts redefines getpropnames() !?!?!? , sigh ....
+							for n in ::getpropnames (IDisplayGamma) do idgStore = append idgStore #( n , getProperty IDisplayGamma n)
+						)
+						-- could be removed but left in as precaution					
 						local oldColorCorrectionMode = try(IDisplayGamma.colorCorrectionMode)catch(undefined)
 						local oldLUTFileName = try(IDisplayGamma.LUTFileName)catch(undefined)
 						local oldgamma  = try(IDisplayGamma.gamma )catch(undefined)
@@ -16467,13 +16493,24 @@ fn OpenGUI initOnly:false=
 						SetQuietMode true
 						renderpresets.LoadAll 0 ((getdir #renderpresets) + "\\backup_last_krakatoa_settings.rps" )		
 						SetQuietMode false
+
+						if( classof ColorPipelineMgr != UndefinedClass ) do
+						(
+							for i = 1 to cpmStore.count do try(setProperty ColorPipelineMgr cpmStore[i][1] cpmStore[i][2]) catch() -- format "KrakatoaGUI: ColorPipelineMgr restore failed: %\n" cpmStore[i][1] )
+						)
 						
+						if( classof IDisplayGamma != UndefinedClass ) do
+						(
+							for i = 1 to idgStore.count do try(setProperty IDisplayGamma idgStore[i][1] idgStore[i][2]) catch()  -- format "KrakatoaGUI: IDisplayGamma restore failed: %\n" idgStore[i][1] )
+						)
+						-- could be removed but left in as precaution
 						try(if oldColorCorrectionMode != undefined do IDisplayGamma.colorCorrectionMode = oldColorCorrectionMode)catch()
 						try(if oldLUTFileName != undefined do IDisplayGamma.LUTFileName = oldLUTFileName)catch()
 						try(if oldgamma != undefined do IDisplayGamma.gamma = oldgamma)catch()
 						try(if oldcolorCorrectionPrefMode != undefined do IDisplayGamma.colorCorrectionPrefMode = oldcolorCorrectionPrefMode)catch()
 						try(if oldcoloraffectColorPickers != undefined do IDisplayGamma.affectColorPickers = oldcoloraffectColorPickers)catch()
 						try(if oldaffectMEdit != undefined do IDisplayGamma.affectMEdit = oldaffectMEdit)catch()
+
 						
 						renderers.medit_locked=false
 						renderers.medit = Default_Scanline_Renderer()
@@ -17778,6 +17815,21 @@ macroScript RemoveKrakatoa category:"Krakatoa" tooltip:"Switch Back From Krakato
 					try(destroyDialog Krakatoa_GUI_Preferences)catch()
 					RenderPresets.Save 0 ((getdir #renderpresets) + "\\backup_last_krakatoa_settings.rps") #{1,4..64} 
 					
+					local cpmStore=#()					
+					if( classof ColorPipelineMgr != UndefinedClass ) do
+					(
+						-- need to force global namespace as this scripts redefines getpropnames() !?!?!? , sigh ....
+						for n in ::getpropnames ColorPipelineMgr do cpmStore = append cpmStore #( n , getProperty ColorPipelineMgr n)
+					)
+					
+					local idgStore=#()
+					if( classof IDisplayGamma != UndefinedClass ) do
+					(
+						-- need to force global namespace as this scripts redefines getpropnames() !?!?!? , sigh ....
+						for n in ::getpropnames IDisplayGamma do idgStore = append idgStore #( n , getProperty IDisplayGamma n)
+					)
+	
+					-- could be removed but left in as precaution
 					local oldColorCorrectionMode = try(IDisplayGamma.colorCorrectionMode)catch(undefined)
 					local oldLUTFileName = try(IDisplayGamma.LUTFileName)catch(undefined)
 					local oldgamma  = try(IDisplayGamma.gamma )catch(undefined)
@@ -17789,6 +17841,19 @@ macroScript RemoveKrakatoa category:"Krakatoa" tooltip:"Switch Back From Krakato
 					renderpresets.LoadAll 0 lastRendererPresetFilename 
 					SetQuietMode false
 					
+					if( classof ColorPipelineMgr != UndefinedClass ) do
+					(
+						for i = 1 to cpmStore.count do try(setProperty ColorPipelineMgr cpmStore[i][1] cpmStore[i][2]) catch() 
+						--Could be put in catch clause for debug output:  format "KrakatoaGUI: ColorPipelineMgr restore failed: %\n" cpmStore[i][1] )
+					)
+					
+					if( classof IDisplayGamma != UndefinedClass ) do
+					(
+						for i = 1 to idgStore.count do try(setProperty IDisplayGamma idgStore[i][1] idgStore[i][2]) catch() 
+						--Could be put in catch clause for debug output:  format "KrakatoaGUI: IDisplayGamma restore failed: %\n" idgStore[i][1] )
+					)
+
+					-- could be removed but left in as precaution					
 					try(if oldColorCorrectionMode != undefined do IDisplayGamma.colorCorrectionMode = oldColorCorrectionMode)catch()
 					try(if oldLUTFileName != undefined do IDisplayGamma.LUTFileName = oldLUTFileName)catch()
 					try(if oldgamma != undefined do IDisplayGamma.gamma = oldgamma)catch()

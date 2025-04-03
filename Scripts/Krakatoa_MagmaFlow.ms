@@ -10633,7 +10633,11 @@
 		local theGamma = 1.0
 		fn initNavigator =
 		(
-			theGamma = if IDisplayGamma.colorCorrectionMode == #gamma then IDisplayGamma.gamma else 1.0
+			if classof ColorPipelineMgr != UndefinedClass then 
+				theGamma = if ColorPipelineMgr.mode == #gamma then ColorPipelineMgr.displayGamma else 1.0
+			else
+				theGamma = if IDisplayGamma.colorCorrectionMode == #gamma then IDisplayGamma.gamma else 1.0
+
 			navigatorBitmapBlank = bitmap 180 100 color:MagmaFlowColors.EditorBackgroundColor gamma:(1.0/theGamma)
 			navigatorBitmapBackground = bitmap 180 100 gamma:(1.0/theGamma)
 			navigatorBitmapForeground = bitmap 180 100 gamma:(1.0/theGamma)

@@ -20,7 +20,7 @@ add_library( krakatoamx SHARED )
 
 set_property( TARGET krakatoamx PROPERTY CXX_STANDARD 17 )
 
-set_target_properties( krakatoamx PROPERTIES OUTPUT_NAME "MaxKrakatoa" )
+set_target_properties( krakatoamx PROPERTIES OUTPUT_NAME "MaxKrakatoa_${MAX_VERSION}" )
 set_target_properties( krakatoamx PROPERTIES PREFIX "" )
 set_target_properties( krakatoamx PROPERTIES SUFFIX ".dlr" )
 
